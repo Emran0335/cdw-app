@@ -1,5 +1,6 @@
-import { Prisma } from "@prisma/client";
-
+import type { Classified, Prisma } from "@prisma/client";
+import type { ChangeEvent } from "react";
+import { UpdateClassifiedType } from "@/app/schemas/classified.schema";
 type Params = {
   [x: string]: string | string[];
 };
@@ -19,3 +20,21 @@ export type ClassifiedWithImages = Prisma.ClassifiedGetPayload<{
     images: true;
   };
 }>;
+
+export type CustomerWithClassified = Prisma.CustomerGetPayload<{
+  include: { classified: true };
+}>;
+
+export enum MultiStepFormEnum {
+  WELCOME = 1,
+  SELECT_DATE = 2,
+  SUBMIT_DETAILS = 3,
+}
+
+export interface Favourites {
+  ids: number[];
+}
+
+export interface TaxonomyFiltersProps extends AwaitedPageProps {
+  handleChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+}

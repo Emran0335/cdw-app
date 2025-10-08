@@ -1,11 +1,28 @@
+import { PageSchema } from "@/app/schemas/page.schema";
 import { ClassifiedsList } from "@/components/inventory/classifieds-list";
+import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
 import { AwaitedPageProps, PageProps } from "@/config/types";
+
 import { prisma } from "@/lib/prisma";
+import { buildClassifiedFilterQuery } from "@/lib/utils";
+import { ClassifiedStatus } from "@prisma/client";
 import React from "react";
 
 const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
+  const validPage = PageSchema.parse(searchParams?.page);
+  // get the current page
+  const page = validPage ?? 1;
+  console.log("page", page);
+
+  // calculate the offset
+  const offset = (page - 1) * CLASSIFIEDS_PER_PAGE;
+  console.log("offset", offset);
+
   return prisma.classified.findMany({
-    include: { images: true },
+    where: buildClassifiedFilterQuery(searchParams),
+    include: { images: { take: 1 } },
+    skip: offset,
+    take: CLASSIFIEDS_PER_PAGE,
   });
 };
 
@@ -13,7 +30,28 @@ export default async function InventoryPage(props: PageProps) {
   const searchParams = await props.searchParams;
 
   const classifieds = await getInventory(searchParams);
-  const count = await prisma.classified.count();
   console.log("classifieds", classifieds);
+  
+  const count = await prisma.classified.count({
+    where: buildClassifiedFilterQuery(searchParams),
+  });
+
+  console.log("count", count);
+
+  const minMaxResult = await prisma.classified.aggregate({
+    where: { status: ClassifiedStatus.LIVE },
+    _min: {
+      year: true,
+      price: true,
+      odoReading: true,
+    },
+    _max: {
+      price: true,
+      year: true,
+      odoReading: true,
+    },
+  });
+
+  // const sourceId = await getSourceId()
   return <ClassifiedsList classifieds={classifieds} />;
 }
