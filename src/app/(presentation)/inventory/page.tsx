@@ -1,9 +1,11 @@
 import { PageSchema } from "@/app/schemas/page.schema";
 import { ClassifiedsList } from "@/components/inventory/classifieds-list";
 import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
-import { AwaitedPageProps, PageProps } from "@/config/types";
+import { AwaitedPageProps, Favourites, PageProps } from "@/config/types";
 
 import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis-store";
+import { getSourceId } from "@/lib/source-id";
 import { buildClassifiedFilterQuery } from "@/lib/utils";
 import { ClassifiedStatus } from "@prisma/client";
 import React from "react";
@@ -31,7 +33,7 @@ export default async function InventoryPage(props: PageProps) {
 
   const classifieds = await getInventory(searchParams);
   console.log("classifieds", classifieds);
-  
+
   const count = await prisma.classified.count({
     where: buildClassifiedFilterQuery(searchParams),
   });
@@ -52,6 +54,8 @@ export default async function InventoryPage(props: PageProps) {
     },
   });
 
-  // const sourceId = await getSourceId()
+  const sourceId = await getSourceId();
+  const favourite = await redis.get<Favourites>(sourceId ?? "");
+  const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
   return <ClassifiedsList classifieds={classifieds} />;
 }
