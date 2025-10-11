@@ -1,6 +1,10 @@
 import { PageSchema } from "@/app/schemas/page.schema";
 import { ClassifiedsList } from "@/components/inventory/classifieds-list";
+import DialogFilters from "@/components/inventory/dialog-filters";
+import InventorySkeleton from "@/components/inventory/inventory-skeleton";
+import CustomPagination from "@/components/shared/custom-pagination";
 import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
+import { routes } from "@/config/routes";
 import { AwaitedPageProps, Favourites, PageProps } from "@/config/types";
 
 import { prisma } from "@/lib/prisma";
@@ -8,7 +12,7 @@ import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 import { buildClassifiedFilterQuery } from "@/lib/utils";
 import { ClassifiedStatus } from "@prisma/client";
-import React from "react";
+import React, { Suspense } from "react";
 
 const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
   const validPage = PageSchema.parse(searchParams?.page);
@@ -55,7 +59,30 @@ export default async function InventoryPage(props: PageProps) {
   });
 
   const sourceId = await getSourceId();
-  const favourite = await redis.get<Favourites>(sourceId ?? "");
-  const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
-  return <ClassifiedsList classifieds={classifieds} />;
+  const favourites = await redis.get<Favourites>(sourceId ?? "");
+  // const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
+
+  return (
+    <div className="flex">
+      {/* Sidebar  */}
+      {/* <Sidebar /> */}
+
+      <div className="">
+        <div className="">
+          <div className="">
+            <h2 className="">We have found {count} classifieds</h2>
+            {/* DialogFilters  */}
+            <DialogFilters />
+          </div>
+          <CustomPagination />
+        </div>
+
+        <Suspense fallback={<InventorySkeleton />}>
+          <ClassifiedsList classifieds={classifieds} favourites={favourites ? favourites.ids : []} />
+        </Suspense>
+
+        <CustomPagination />
+      </div>
+    </div>
+  );
 }
