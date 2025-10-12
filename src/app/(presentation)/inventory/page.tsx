@@ -60,6 +60,8 @@ export default async function InventoryPage(props: PageProps) {
 
   const sourceId = await getSourceId();
   const favourites = await redis.get<Favourites>(sourceId ?? "");
+
+  console.log({ favourites });
   // const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
 
   return (
@@ -78,7 +80,10 @@ export default async function InventoryPage(props: PageProps) {
         </div>
 
         <Suspense fallback={<InventorySkeleton />}>
-          <ClassifiedsList classifieds={classifieds} favourites={favourites ? favourites.ids : []} />
+          <ClassifiedsList
+            classifieds={classifieds}
+            favourites={favourites ? favourites.ids : []}
+          />
         </Suspense>
 
         <CustomPagination />
