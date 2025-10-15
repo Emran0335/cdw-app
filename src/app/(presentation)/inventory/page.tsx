@@ -1,4 +1,3 @@
-import { PageSchema } from "@/app/schemas/page.schema";
 import { ClassifiedsList } from "@/components/inventory/classifieds-list";
 import DialogFilters from "@/components/inventory/dialog-filters";
 import InventorySkeleton from "@/components/inventory/inventory-skeleton";
@@ -6,6 +5,7 @@ import CustomPagination from "@/components/shared/custom-pagination";
 import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
 import { routes } from "@/config/routes";
 import { AwaitedPageProps, Favourites, PageProps } from "@/config/types";
+import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis-store";
@@ -14,18 +14,21 @@ import { buildClassifiedFilterQuery } from "@/lib/utils";
 import { ClassifiedStatus } from "@prisma/client";
 import React, { Suspense } from "react";
 
+const PageSchema = z
+  .string()
+  .transform((val) => Math.max(Number(val), 1))
+  .optional();
+
 const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
   const validPage = PageSchema.parse(searchParams?.page);
+
   // get the current page
-  const page = validPage ?? 1;
-  console.log("page", page);
+  const page = validPage ? validPage : 1;
 
   // calculate the offset
   const offset = (page - 1) * CLASSIFIEDS_PER_PAGE;
-  console.log("offset", offset);
-
   return prisma.classified.findMany({
-    where: buildClassifiedFilterQuery(searchParams),
+    where: {},
     include: { images: { take: 1 } },
     skip: offset,
     take: CLASSIFIEDS_PER_PAGE,
@@ -62,31 +65,39 @@ export default async function InventoryPage(props: PageProps) {
   const favourites = await redis.get<Favourites>(sourceId ?? "");
 
   console.log({ favourites });
-  // const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
+  const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
 
   return (
     <div className="flex">
       {/* Sidebar  */}
       {/* <Sidebar /> */}
 
-      <div className="">
-        <div className="">
-          <div className="">
-            <h2 className="">We have found {count} classifieds</h2>
-            {/* DialogFilters  */}
+      <div className="flex-1 p-4 bg-white">
+        <div className="flex space-y-2 flex-col lg:flex-row items-center justify-center pb-4 -mt-1">
+          <div className="flex justify-between items-center w-full">
+            <h2 className="text-sm md:text-base lg:text-xl font-semibold min-w-fit">
+              We have found {count} classifieds
+            </h2>
             <DialogFilters />
           </div>
-          <CustomPagination />
+          <CustomPagination
+            baseURL={routes.inventory}
+            totalPages={totalPages}
+            styles={{
+              paginationRoot: "flex justify-end",
+              paginationPrevious: "",
+              paginationNext: "",
+              paginationLink: "border-none active:border text-black",
+              paginationLinkActive: "",
+            }}
+          />
         </div>
-
         <Suspense fallback={<InventorySkeleton />}>
           <ClassifiedsList
             classifieds={classifieds}
             favourites={favourites ? favourites.ids : []}
           />
         </Suspense>
-
-        <CustomPagination />
       </div>
     </div>
   );

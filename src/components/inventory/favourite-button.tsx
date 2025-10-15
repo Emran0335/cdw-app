@@ -32,7 +32,7 @@ export const FavouriteButton = (props: FavouriteButtonProps) => {
       variant="ghost"
       size="icon"
       className={cn(
-        "absolute top-2.5 left-3.5 rounded-full z-10 group !h-6 !w-6 lg:!h-8 lg:!w-8 xl:w!w-10 xl:!h-10",
+        "absolute top-2.5 left-3.5 rounded-full z-10 group !h-6 !w-6 lg:!h-8 lg:!w-8 xl:!w-10 xl:!h-10",
         isFavourite ? "bg-white" : "!bg-muted/15"
       )}
     >
