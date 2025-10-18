@@ -10,14 +10,83 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
-import { buildClassifiedFilterQuery } from "@/lib/utils";
-import { ClassifiedStatus } from "@prisma/client";
+// import { buildClassifiedFilterQuery } from "@/lib/utils";
+import { ClassifiedStatus, Prisma } from "@prisma/client";
 import React, { Suspense } from "react";
+import { Sidebar } from "@/components/inventory/sidebar";
 
 const PageSchema = z
   .string()
   .transform((val) => Math.max(Number(val), 1))
   .optional();
+
+const ClassifiedFilterSchema = z.object({
+  q: z.string().optional(),
+  make: z.string().optional(),
+  model: z.string().optional(),
+  modelVariant: z.string().optional(),
+  minYear: z.string().optional(),
+  maxYear: z.string().optional(),
+  minPrice: z.string().optional(),
+  maxPrice: z.string().optional(),
+  minReading: z.string().optional(),
+  maxReading: z.string().optional(),
+  currency: z.string().optional(),
+  odoUnit: z.string().optional(),
+  transmission: z.string().optional(),
+  fuelType: z.string().optional(),
+  bodyType: z.string().optional(),
+  colour: z.string().optional(),
+  doors: z.string().optional(),
+  seats: z.string().optional(),
+  ulezCompliance: z.string().optional(),
+});
+
+const buildClassifiedFilterQuery = (
+  searchParams: AwaitedPageProps["searchParams"] | undefined
+): Prisma.ClassifiedWhereInput => {
+  const { data } = ClassifiedFilterSchema.safeParse(searchParams);
+
+  if (!data) return { status: ClassifiedStatus.LIVE };
+
+  const keys = Object.keys(data);
+
+  const taxonomyFilters = ["make", "model", "modelVariant"];
+
+  const mapParamsToFields = keys.reduce((acc, key) => {
+    const value = searchParams?.[key] as string | undefined;
+
+    if (!value) return acc;
+
+    if (taxonomyFilters.includes(key)) {
+      acc[key] = { id: Number(value) };
+    }
+
+    return acc;
+  }, {} as { [key: string]: any });
+
+  return {
+    status: ClassifiedStatus.LIVE,
+
+    ...(searchParams?.q && {
+      OR: [
+        {
+          title: {
+            contains: searchParams.q as string,
+            mode: "insensitive",
+          },
+        },
+        {
+          description: {
+            contains: searchParams.q as string,
+            mode: "insensitive",
+          },
+        },
+      ],
+    }),
+    ...mapParamsToFields,
+  };
+};
 
 const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
   const validPage = PageSchema.parse(searchParams?.page);
@@ -27,8 +96,9 @@ const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
 
   // calculate the offset
   const offset = (page - 1) * CLASSIFIEDS_PER_PAGE;
-  return prisma.classified.findMany({
-    where: {},
+
+  return await prisma.classified.findMany({
+    where: buildClassifiedFilterQuery(searchParams),
     include: { images: { take: 1 } },
     skip: offset,
     take: CLASSIFIEDS_PER_PAGE,
@@ -38,14 +108,11 @@ const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
 export default async function InventoryPage(props: PageProps) {
   const searchParams = await props.searchParams;
 
-  const classifieds = await getInventory(searchParams);
-  console.log("classifieds", classifieds);
+  const classifieds = getInventory(searchParams);
 
   const count = await prisma.classified.count({
     where: buildClassifiedFilterQuery(searchParams),
   });
-
-  console.log("count", count);
 
   const minMaxResult = await prisma.classified.aggregate({
     where: { status: ClassifiedStatus.LIVE },
@@ -64,14 +131,11 @@ export default async function InventoryPage(props: PageProps) {
   const sourceId = await getSourceId();
   const favourites = await redis.get<Favourites>(sourceId ?? "");
 
-  console.log({ favourites });
   const totalPages = Math.ceil(count / CLASSIFIEDS_PER_PAGE);
 
   return (
     <div className="flex">
-      {/* Sidebar  */}
-      {/* <Sidebar /> */}
-
+      <Sidebar minMaxValues={minMaxResult} searchParams={searchParams} />
       <div className="flex-1 p-4 bg-white">
         <div className="flex space-y-2 flex-col lg:flex-row items-center justify-center pb-4 -mt-1">
           <div className="flex justify-between items-center w-full">
