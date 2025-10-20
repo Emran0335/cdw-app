@@ -15,16 +15,11 @@ import { FavouriteButton } from "./favourite-button";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { formatNumber } from "@/lib/utils";
 
 interface ClassifiedCardProps {
   classified: ClassifiedWithImages;
   favourites: number[];
-}
-
-function formatNumber(num: number | null, options?: Intl.NumberFormatOptions) {
-  if (!num) return "0";
-
-  return new Intl.NumberFormat("en-GB", options).format(num);
 }
 
 function formatOdometerUnit(unit: OdoUnit) {

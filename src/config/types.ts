@@ -1,4 +1,4 @@
-import type { Classified, Prisma } from "@prisma/client";
+import type { Classified, ClassifiedStatus, Prisma } from "@prisma/client";
 import type { ChangeEvent } from "react";
 import { UpdateClassifiedType } from "@/app/schemas/classified.schema";
 type Params = {
@@ -43,7 +43,6 @@ export type FilterOptions<LType, VType> = Array<{
   label: LType;
   value: VType;
 }>;
-
 
 export interface SidebarProps extends AwaitedPageProps {
   minMaxValues: Prisma.GetClassifiedAggregateType<{

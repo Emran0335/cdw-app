@@ -12,6 +12,9 @@ import { RangeFilter } from "./range-filter";
 
 export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
   const router = useRouter();
+
+  const { _min, _max } = minMaxValues;
+
   const [filterCount, setFilterCount] = useState(0);
 
   const [queryStates, setQueryStates] = useQueryStates(
@@ -105,7 +108,40 @@ export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
           searchParams={searchParams}
           handleChange={handleChange}
         />
-        <RangeFilter />
+        <RangeFilter
+          label="Year"
+          minName="minYear"
+          maxName="maxYear"
+          defaultMin={_min.year || 1925}
+          defaultMax={_max.year || new Date().getFullYear()}
+          handleChange={handleChange}
+          searchParams={searchParams}
+        />
+        <RangeFilter
+          label="Price"
+          minName="minPrice"
+          maxName="maxPrice"
+          defaultMin={_min.price || 0}
+          defaultMax={_max.price || 21474836}
+          handleChange={handleChange}
+          searchParams={searchParams}
+          increment={100000}
+          thousandSeparator
+          currency={{
+            currenctyCode: "GBP"
+          }}
+        />
+        <RangeFilter
+          label="Odometer Reading"
+          minName="minReading"
+          maxName="maxReading"
+          defaultMin={_min.odoReading || 0}
+          defaultMax={_max.odoReading || 1000000}
+          handleChange={handleChange}
+          searchParams={searchParams}
+          increment={5000}
+          thousandSeparator
+        />
       </div>
     </div>
   );

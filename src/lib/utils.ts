@@ -1,12 +1,42 @@
 import { ClassifiedFilterSchema } from "@/app/schemas/classified.schema";
 import { AwaitedPageProps } from "@/config/types";
-import { ClassifiedStatus, Prisma } from "@prisma/client";
+import { ClassifiedStatus, CurrencyCode, Prisma } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+interface FormatPriceArgs {
+  price: number;
+  currency: CurrencyCode | null;
+}
+
+export function FormatPrice({ price, currency }: FormatPriceArgs) {
+  if (!price) return "0";
+
+  const formatter = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currencyDisplay: "symbol",
+    ...(currency && { currency }),
+    maximumFractionDigits: 0,
+  });
+
+  if (currency === "USD") {
+    return formatter.format(price / 1000).replace("US$", "$");
+  }
+
+  return formatter.format(price / 1000);
+}
+
+
+export function formatNumber(num: number | null, options?: Intl.NumberFormatOptions) {
+  if (!num) return "0";
+
+  return new Intl.NumberFormat("en-GB", options).format(num);
+}
+
 
 export const buildClassifiedFilterQuery = (
   searchParams: AwaitedPageProps["searchParams"] | undefined
