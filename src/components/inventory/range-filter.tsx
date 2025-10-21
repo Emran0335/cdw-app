@@ -2,7 +2,7 @@ import type { FilterOptions, TaxonomyFiltersProps } from "@/config/types";
 import { CurrencyCode } from "@prisma/client";
 import { RangeSelect } from "../ui/range-select";
 import { useEffect, useState } from "react";
-import { formatNumber, FormatPrice } from "@/lib/utils";
+import { formatNumber, formatPrice } from "@/lib/utils";
 
 interface RangeFilterProps extends TaxonomyFiltersProps {
   label: string;
@@ -33,7 +33,7 @@ export const RangeFilter = (props: RangeFilterProps) => {
 
   const getInitialState = () => {
     const state: FilterOptions<string, number> = [];
-    let iterator = defaultMin - 1;
+    let iterator = defaultMin - (increment ?? 1);
 
     do {
       if (increment) {
@@ -44,7 +44,7 @@ export const RangeFilter = (props: RangeFilterProps) => {
 
       if (currency) {
         state.push({
-          label: FormatPrice({
+          label: formatPrice({
             price: iterator,
             currency: currency.currenctyCode,
           }),

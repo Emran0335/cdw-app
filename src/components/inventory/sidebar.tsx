@@ -2,20 +2,34 @@
 import { routes } from "@/config/routes";
 import { AwaitedPageProps, SidebarProps } from "@/config/types";
 import { env } from "@/env";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  formatColour,
+  formatFuelType,
+  formatOdometerUnit,
+  formatTransmission,
+} from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { parseAsString, useQueryStates } from "nuqs";
 import { ChangeEvent, useEffect, useState } from "react";
 import { SearchInput } from "../shared/search-input";
 import { TaxonomyFilters } from "./taxonomy-filters";
 import { RangeFilter } from "./range-filter";
+import { Select } from "../ui/select";
+import {
+  BodyType,
+  Colour,
+  CurrencyCode,
+  FuelType,
+  OdoUnit,
+  Transmission,
+  ULEZCompliance,
+} from "@prisma/client";
 
 export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
   const router = useRouter();
-
-  const { _min, _max } = minMaxValues;
-
   const [filterCount, setFilterCount] = useState(0);
+  const { _min, _max } = minMaxValues;
 
   const [queryStates, setQueryStates] = useQueryStates(
     {
@@ -125,10 +139,10 @@ export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
           defaultMax={_max.price || 21474836}
           handleChange={handleChange}
           searchParams={searchParams}
-          increment={100000}
+          increment={1000000}
           thousandSeparator
           currency={{
-            currenctyCode: "GBP"
+            currenctyCode: "GBP",
           }}
         />
         <RangeFilter
@@ -141,6 +155,76 @@ export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
           searchParams={searchParams}
           increment={5000}
           thousandSeparator
+        />
+        <Select
+          label="Currency"
+          name="currency"
+          value={queryStates.currency || ""}
+          onChange={handleChange}
+          options={Object.values(CurrencyCode).map((value) => ({
+            label: value,
+            value,
+          }))}
+        />
+        <Select
+          label="Odometer Unit"
+          name="odoUnit"
+          value={queryStates.odoUnit || ""}
+          onChange={handleChange}
+          options={Object.values(OdoUnit).map((value) => ({
+            label: formatOdometerUnit(value),
+            value,
+          }))}
+        />
+        <Select
+          label="Transmission"
+          name="transmission"
+          value={queryStates.transmission || ""}
+          onChange={handleChange}
+          options={Object.values(Transmission).map((value) => ({
+            label: formatTransmission(value),
+            value,
+          }))}
+        />
+        <Select
+          label="Fuel Type"
+          name="fuelType"
+          value={queryStates.fuelType || ""}
+          onChange={handleChange}
+          options={Object.values(FuelType).map((value) => ({
+            label: formatFuelType(value),
+            value,
+          }))}
+        />
+        <Select
+          label="Body Type"
+          name="bodyType"
+          value={queryStates.bodyType || ""}
+          onChange={handleChange}
+          options={Object.values(BodyType).map((value) => ({
+            label: value, // formatBodyType()
+            value,
+          }))}
+        />
+        <Select
+          label="Colour"
+          name="colour"
+          value={queryStates.colour || ""}
+          onChange={handleChange}
+          options={Object.values(Colour).map((value) => ({
+            label: formatColour(value),
+            value,
+          }))}
+        />
+        <Select
+          label="ULEZ Compliance"
+          name="ulezCompliance"
+          value={queryStates.ulezCompliance || ""}
+          onChange={handleChange}
+          options={Object.values(ULEZCompliance).map((value) => ({
+            label: value, // formatUlezCompliance
+            value,
+          }))}
         />
       </div>
     </div>
