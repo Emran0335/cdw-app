@@ -5,7 +5,6 @@ import CustomPagination from "@/components/shared/custom-pagination";
 import { CLASSIFIEDS_PER_PAGE } from "@/config/constants";
 import { routes } from "@/config/routes";
 import { AwaitedPageProps, Favourites, PageProps } from "@/config/types";
-import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis-store";

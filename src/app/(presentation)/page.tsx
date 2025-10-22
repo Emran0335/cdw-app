@@ -7,7 +7,6 @@ import React from "react";
 
 export default async function Home(props: PageProps) {
   const searchParams = await props.searchParams;
-  // console.log(searchParams)
   return (
     <div>
       <HeroSecction />

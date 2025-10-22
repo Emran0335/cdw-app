@@ -4,10 +4,12 @@ import { AwaitedPageProps, SidebarProps } from "@/config/types";
 import { env } from "@/env";
 import {
   cn,
+  formatBodyType,
   formatColour,
   formatFuelType,
   formatOdometerUnit,
   formatTransmission,
+  formatUlezCompliance,
 } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { parseAsString, useQueryStates } from "nuqs";
@@ -202,7 +204,7 @@ export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
           value={queryStates.bodyType || ""}
           onChange={handleChange}
           options={Object.values(BodyType).map((value) => ({
-            label: value, // formatBodyType()
+            label: formatBodyType(value),
             value,
           }))}
         />
@@ -222,8 +224,28 @@ export const Sidebar = ({ minMaxValues, searchParams }: SidebarProps) => {
           value={queryStates.ulezCompliance || ""}
           onChange={handleChange}
           options={Object.values(ULEZCompliance).map((value) => ({
-            label: value, // formatUlezCompliance
+            label: formatUlezCompliance(value),
             value,
+          }))}
+        />
+        <Select
+          label="Doors"
+          name="doors"
+          value={queryStates.doors || ""}
+          onChange={handleChange}
+          options={Array.from({ length: 6 }).map((_, i) => ({
+            label: Number(i + 1).toString(),
+            value: Number(i + 1).toString(),
+          }))}
+        />
+        <Select
+          label="Seats"
+          name="doors"
+          value={queryStates.seats || ""}
+          onChange={handleChange}
+          options={Array.from({ length: 8 }).map((_, i) => ({
+            label: Number(i + 1).toString(),
+            value: Number(i + 1).toString(),
           }))}
         />
       </div>

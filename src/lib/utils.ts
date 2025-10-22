@@ -1,6 +1,7 @@
 import { ClassifiedFilterSchema } from "@/app/schemas/classified.schema";
 import { AwaitedPageProps } from "@/config/types";
 import {
+  BodyType,
   ClassifiedStatus,
   Colour,
   CurrencyCode,
@@ -8,6 +9,7 @@ import {
   OdoUnit,
   Prisma,
   Transmission,
+  ULEZCompliance,
 } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -19,6 +21,29 @@ export function cn(...inputs: ClassValue[]) {
 interface FormatPriceArgs {
   price: number;
   currency: CurrencyCode | null;
+}
+
+export function formatUlezCompliance(ulezCompliance: ULEZCompliance) {
+  return ulezCompliance === ULEZCompliance.EXEMPT ? "Exempt" : "Non-Exempt";
+}
+
+export function formatBodyType(bodyType: BodyType) {
+  switch (bodyType) {
+    case BodyType.CONVERTIBLE:
+      return "Convertible";
+    case BodyType.COUPE:
+      return "Coupe";
+    case BodyType.HATCHBACK:
+      return "Hatchback";
+    case BodyType.SEDAN:
+      return "Sedan";
+    case BodyType.SUV:
+      return "Suv";
+    case BodyType.WAGON:
+      return "Wagon";
+    default:
+      return "Unknown";
+  }
 }
 
 export function formatPrice({ price, currency }: FormatPriceArgs) {
