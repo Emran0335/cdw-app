@@ -15,7 +15,6 @@ import React, { Suspense } from "react";
 import { Sidebar } from "@/components/inventory/sidebar";
 import { PageSchema } from "@/app/schemas/page.schema";
 
-
 const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
   const validPage = PageSchema.parse(searchParams?.page);
 
@@ -70,13 +69,17 @@ export default async function InventoryPage(props: PageProps) {
             <h2 className="text-sm md:text-base lg:text-xl font-semibold min-w-fit">
               We have found {count} classifieds
             </h2>
-            <DialogFilters />
+            <DialogFilters
+              minMaxValues={minMaxResult}
+              count={count}
+              searchParams={searchParams}
+            />
           </div>
           <CustomPagination
             baseURL={routes.inventory}
             totalPages={totalPages}
             styles={{
-              paginationRoot: "flex justify-end",
+              paginationRoot: "flex justify-end hidden lg:block",
               paginationPrevious: "",
               paginationNext: "",
               paginationLink: "border-none active:border text-black",
