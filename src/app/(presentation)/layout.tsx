@@ -1,9 +1,6 @@
-import React from "react";
+import { PublicLayout } from "@/components/layouts/public-layout";
+import React, { PropsWithChildren } from "react";
 
-export default function PresentationLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div>{children}</div>;
+export default function PresentationLayout(props: PropsWithChildren) {
+  return <PublicLayout>{props.children}</PublicLayout>;
 }
