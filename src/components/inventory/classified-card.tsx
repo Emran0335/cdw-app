@@ -1,21 +1,23 @@
 "use client";
 import { routes } from "@/config/routes";
-import {
-  ClassifiedWithImages,
-  Favourites,
-  MultiStepFormEnum,
-} from "@/config/types";
+import { ClassifiedWithImages, MultiStepFormEnum } from "@/config/types";
 import Image from "next/image";
 import Link from "next/link";
 import HTMLParser from "../shared/html-parser";
 import { Cog, Fuel, GaugeCircle, Paintbrush2 } from "lucide-react";
-import { Colour, FuelType, OdoUnit, Transmission } from "@prisma/client";
 import { Button } from "../ui/button";
 import { FavouriteButton } from "./favourite-button";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatColour, formatFuelType, formatNumber, formatOdometerUnit, formatPrice, formatTransmission } from "@/lib/utils";
+import {
+  formatColour,
+  formatFuelType,
+  formatNumber,
+  formatOdometerUnit,
+  formatPrice,
+  formatTransmission,
+} from "@/lib/utils";
 
 interface ClassifiedCardProps {
   classified: ClassifiedWithImages;
@@ -113,7 +115,7 @@ export const ClassifiedCard = (props: ClassifiedCardProps) => {
                   &nbsp;
                 </div>
               )}
-              <ul className="text-xs dm:text-sm text-gray-600 xl:flex grid grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-4 items-center justify-between w-full">
+              <ul className="text-xs md:text-sm text-gray-600 xl:flex grid grid-cols-1 grid-rows-4 md:grid-cols-2 md:grid-rows-4 items-center justify-between w-full">
                 {getKeyClassifiedInfo(classified)
                   .filter((v) => v.value)
                   .map(({ id, icon, value }) => (

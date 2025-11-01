@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 import { buildClassifiedFilterQuery } from "@/lib/utils";
-import { ClassifiedStatus, Prisma } from "@prisma/client";
+import { ClassifiedStatus } from "@prisma/client";
 import React, { Suspense } from "react";
 import { Sidebar } from "@/components/inventory/sidebar";
 import { PageSchema } from "@/app/schemas/page.schema";

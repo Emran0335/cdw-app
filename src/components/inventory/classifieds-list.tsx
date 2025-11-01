@@ -1,4 +1,4 @@
-import { ClassifiedWithImages, Favourites } from "@/config/types";
+import { ClassifiedWithImages } from "@/config/types";
 import { ClassifiedCard } from "./classified-card";
 import { use } from "react";
 
