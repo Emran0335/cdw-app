@@ -5,21 +5,15 @@ import React from "react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { HeartIcon, MenuIcon } from "lucide-react";
+import { redis } from "@/lib/redis-store";
+import { Favourites } from "@/config/types";
+import { getSourceId } from "@/lib/source-id";
+import { navLinks } from "@/config/constants";
 
-const navLinks = [
-  {
-    id: 1,
-    href: routes.home,
-    label: "Home",
-  },
-  {
-    id: 2,
-    href: routes.inventory,
-    label: "Inventory",
-  },
-];
 
-export default function PublicHeader() {
+export default async function PublicHeader() {
+  const sourceId = await getSourceId();
+  const favourites = await redis.get<Favourites>(sourceId ?? "");
   return (
     <header className="flex items-center justify-between h-16 px-4 bg-transparent gap-x-6">
       <div className="flex items-center flex-1">
@@ -53,6 +47,9 @@ export default function PublicHeader() {
         <Link href={routes.favourites}>
           <div className="flex group-hover:bg-pink-500 duration-200 transition-color ease-in-out items-center justify-center w-10 h-10 bg-muted rounded-full">
             <HeartIcon className="w-6 h-6 text-primary group-hover:text-white group-hover:fill-white" />
+          </div>
+          <div className="absolute -top-1 5 -right-1 5 flex items-center justify-center w-5 h-5 text-white bg-pink-500 rounded-full group-hover:bg-primary">
+            <span className="text-sx">{favourites ? favourites.ids.length : 0}</span>
           </div>
         </Link>
       </Button>
