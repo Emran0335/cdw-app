@@ -34,18 +34,16 @@ export default function PublicFooter() {
   return (
     <footer className="bg-gray-100 px-8 lg:px-0 py-8">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Link href={routes.home} className="flex items-center">
-              <Image
-                width={300}
-                height={100}
-                alt="logo"
-                className="h-8 relative"
-                src="/logo.svg"
-              />
-            </Link>
-          </div>
+        <div className="flex flex-col items-center space-x-2 gap-y-2">
+          <Link href={routes.home} className="flex items-center">
+            <Image
+              width={300}
+              height={100}
+              alt="logo"
+              className="h-8 relative"
+              src="/logo.svg"
+            />
+          </Link>
           <div className="flex space-x-4">
             {socialLinks.map((link) => (
               <Link href={link.href} key={link.id}>
@@ -53,30 +51,36 @@ export default function PublicFooter() {
               </Link>
             ))}
           </div>
-          <div className="space-y-2">
-            <ul className="space-y-1">
-              {navLinks.map((link) => (
-                <li key={link.id}>
-                  <Link
-                    href={link.href}
-                    className="text-foreground hover:text-primary"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <NewsletterForm />
         </div>
-        <div className="container mx-auto mt-8 text-center text-gray-700">
-          <h4 className="text-lg font-bold text-primary">Company Info</h4>
-          <p>Company No. 123456789 | VAT No. GB123456789</p>
-          <p>
-            Majestic is not authorised and not regulated by the Financial
-            Conduct Authority
-          </p>
-        </div>
+        <ul className="space-y-1">
+          {navLinks.map((link) => (
+            <li key={link.id}>
+              <Link
+                href={link.href}
+                className="text-foreground hover:text-primary"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link
+              href={routes.home}
+              className="text-foreground hover:text-primary"
+            >
+              Admin
+            </Link>
+          </li>
+        </ul>
+        <NewsletterForm />
+      </div>
+      <div className="container mx-auto mt-8 text-center text-gray-700">
+        <h4 className="text-lg font-bold text-primary">Company Info</h4>
+        <p>Company No. 123456789 | VAT No. GB123456789</p>
+        <p>
+          Majestic is not authorised and not regulated by the Financial Conduct
+          Authority
+        </p>
       </div>
     </footer>
   );
