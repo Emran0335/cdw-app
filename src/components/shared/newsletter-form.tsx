@@ -14,9 +14,26 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { CircleCheckIcon, CircleX, Loader2 } from "lucide-react";
+import { useFormStatus } from "react-dom";
+
+const SubscribeButton = () => {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full uppercase font-bold"
+    >
+      {pending && (
+        <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden="true" />
+      )}
+      Subscribe Now
+    </Button>
+  );
+};
 
 export default function NewsletterForm() {
-  const [state, formAction, pending] = useActionState(subscribeAction, {
+  const [state, formAction] = useActionState(subscribeAction, {
     success: false,
     message: "",
   });
@@ -109,15 +126,7 @@ export default function NewsletterForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full uppercase font-bold">
-            {pending && (
-              <Loader2
-                className="h-4 w-4 shrink-0 animate-spin"
-                aria-hidden="true"
-              />
-            )}
-            Subscribe Now
-          </Button>
+          <SubscribeButton />
           {state.success && (
             <div className="flex items-center gap-2 rounded-md bg-green-500 p-3 text-white">
               <CircleCheckIcon className="h-5 w-5" />
