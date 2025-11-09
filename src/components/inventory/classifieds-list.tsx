@@ -1,3 +1,4 @@
+"use client";
 import { ClassifiedWithImages } from "@/config/types";
 import { ClassifiedCard } from "./classified-card";
 import { use } from "react";
